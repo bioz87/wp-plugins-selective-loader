@@ -56,7 +56,7 @@ function enable_plugins_selectively($plugins) {
         }
 
         //remove for non admin
-        if(!is_super_admin())
+        if(is_user_logged_in())
         {
             $plugins_to_remove = array_merge($plugins_to_remove, $plugins_to_remove_for_non_admin_users);
         }
