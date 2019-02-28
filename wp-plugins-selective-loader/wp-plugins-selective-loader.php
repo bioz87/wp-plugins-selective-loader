@@ -17,6 +17,9 @@ function convert_to_human_readable($bytes, $decimals = 2) {
     return sprintf("%.{$decimals}f", $bytes / pow(1024, $factor)) . @$size[$factor];
 }
 function enable_plugins_selectively($plugins) {
+    global $loaded_plugins;
+
+    //Never remove a single plugin for the super admin.
     if(!is_super_admin())
     {
         $plugins_to_remove_when_on_frontend                 = array();
@@ -37,8 +40,6 @@ function enable_plugins_selectively($plugins) {
         $plugins_to_remove_for_ajax_calls                   = $plugins_to_remove_for_ajax_calls                 ? $plugins_to_remove_for_ajax_calls : array();
         $plugins_to_remove_as_a_regular_rule                = $plugins_to_remove_as_a_regular_rule              ? $plugins_to_remove_as_a_regular_rule : array();
 
-
-        global $loaded_plugins;
         $current_page 		= add_query_arg( array() );
         $plugins_to_remove	= array();
 
@@ -113,11 +114,15 @@ function enable_plugins_selectively($plugins) {
         {
             function print_stats() {
                 global $loaded_plugins;
-                add_stats_data(convert_to_human_readable(memory_get_usage()), convert_to_human_readable(memory_get_peak_usage()), $loaded_plugins);
+                add_stats_data(
+                    convert_to_human_readable(memory_get_usage()), 
+                    convert_to_human_readable(memory_get_peak_usage()), 
+                    $loaded_plugins
+                );
             }
         }
 
-        if(defined("ENABLE_PLUGIN_LOGGING") && ENABLE_PLUGIN_LOGGING==true)
+        if(defined("ENABLE_PLUGIN_LOGGING") && ENABLE_PLUGIN_LOGGING == true)
         {
             remove_action( 'wp_footer', "print_stats");
             add_action('wp_footer', "print_stats");
